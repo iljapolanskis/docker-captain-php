@@ -1,0 +1,41 @@
+name: Deploy to DigitalOcean
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+      - name: Build with Docker Compose
+        run: docker-compose -f docker-compose.yml build
+
+      # Optional: If you want to push the built images to DockerHub
+      - name: Push to DockerHub
+        run: docker-compose -f docker-compose.yml push
+
+  deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to DigitalOcean
+        env:
+          DIGITAL_OCEAN_SSH_KEY: ${{ secrets.DIGITAL_OCEAN_SSH_KEY }}
+          DIGITAL_OCEAN_SERVER_IP: ${{ secrets.DIGITAL_OCEAN_SERVER_IP }}
+        run: |
+          echo "DIGITAL_OCEAN_SSH_KEY" > DIGITAL_OCEAN_SSH_KEY.pem
+          chmod 600 DIGITAL_OCEAN_SSH_KEY.pem
+          ssh -o StrictHostKeyChecking=no -i do_key.pem root@DIGITAL_OCEAN_SERVER_IP "docker pull your-dockerhub-username/your-image-name:latest && docker run -d -p 80:80 your-dockerhub-username/your-image-name:latest"
