@@ -36,12 +36,14 @@ jobs:
           DIGITAL_OCEAN_SSH_KEY: ${{ secrets.DIGITAL_OCEAN_SSH_KEY }}
           DIGITAL_OCEAN_USER: ${{ secrets.DIGITAL_OCEAN_USER }}
           DIGITAL_OCEAN_HOST: ${{ secrets.DIGITAL_OCEAN_HOST }}
+          CERTBOT_EMAIL: ${{ secrets.CERTBOT_EMAIL }}
         run: |
           echo "$DIGITAL_OCEAN_SSH_KEY" > private_key.pem
           chmod 600 private_key.pem
           
           # SSH into the server, pull the latest changes, and use Docker Compose to build and deploy
           ssh -o StrictHostKeyChecking=no -i private_key.pem $DIGITAL_OCEAN_USER@$DIGITAL_OCEAN_HOST <<EOF
+            export CERTBOT_EMAIL=$CERTBOT_EMAIL
             cd /var/www/docker-captain-php
             git pull origin main
             docker-compose build
