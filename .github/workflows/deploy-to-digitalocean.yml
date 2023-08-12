@@ -36,6 +36,18 @@ jobs:
           DIGITAL_OCEAN_SSH_KEY: ${{ secrets.DIGITAL_OCEAN_SSH_KEY }}
           DIGITAL_OCEAN_SERVER_IP: ${{ secrets.DIGITAL_OCEAN_SERVER_IP }}
         run: |
-          echo "DIGITAL_OCEAN_SSH_KEY" > DIGITAL_OCEAN_SSH_KEY.pem
-          chmod 600 DIGITAL_OCEAN_SSH_KEY.pem
-          ssh -o StrictHostKeyChecking=no -i do_key.pem root@DIGITAL_OCEAN_SERVER_IP "docker pull your-dockerhub-username/your-image-name:latest && docker run -d -p 80:80 your-dockerhub-username/your-image-name:latest"
+          echo "DIGITAL_OCEAN_SSH_KEY" > private_key.pem
+          chmod 600 private_key.pem
+          
+          # SSH into the server, pull the latest changes, and use Docker Compose to build and deploy
+          ssh -o StrictHostKeyChecking=no -i private_key.pem $USER@$HOST <<EOF
+            cd /var/www/docker-captain-php
+            git pull origin main
+            docker-compose build
+            docker-compose up -d
+          
+            # Check if SSL certificates exist, if not, request them from Let's Encrypt using Certbot
+            if [ ! -f /etc/letsencrypt/live/captain-php.com/fullchain.pem ]; then
+              certbot --nginx --non-interactive --agree-tos --email ilja.polanskis.work@gmail.com --domains captain-php.com
+            fi
+          EOF
