@@ -46,9 +46,4 @@ jobs:
             git pull origin main
             docker-compose build
             docker-compose up -d
-          
-            # Check if SSL certificates exist, if not, request them from Let's Encrypt using Certbot
-            if [ ! -f /etc/letsencrypt/live/captain-php.com/fullchain.pem ]; then
-              certbot --nginx --non-interactive --agree-tos --email ilja.polanskis.work@gmail.com --domains captain-php.com
-            fi
           EOF
