@@ -37,7 +37,7 @@ jobs:
           DIGITAL_OCEAN_USER: ${{ secrets.DIGITAL_OCEAN_USER }}
           DIGITAL_OCEAN_HOST: ${{ secrets.DIGITAL_OCEAN_HOST }}
         run: |
-          echo "DIGITAL_OCEAN_SSH_KEY" > private_key.pem
+          echo "$DIGITAL_OCEAN_SSH_KEY" > private_key.pem
           chmod 600 private_key.pem
           
           # SSH into the server, pull the latest changes, and use Docker Compose to build and deploy
