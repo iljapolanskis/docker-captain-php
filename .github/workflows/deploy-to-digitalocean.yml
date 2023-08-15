@@ -20,7 +20,11 @@ jobs:
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
       - name: Build with Docker Compose
-        run: docker-compose -f docker-compose.yml build
+        env:
+          ENV_FILE: ${{ secrets.ENV_FILE }}
+        run: | 
+          echo "$ENV_FILE" > .env
+          docker-compose -f docker-compose.yml build --no-cache
 
       # Optional: If you want to push the built images to DockerHub
       - name: Push to DockerHub
