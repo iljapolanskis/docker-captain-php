@@ -50,6 +50,7 @@ jobs:
           echo "$DIGITAL_OCEAN_SSH_HOST_KEY" | base64 -d > known_hosts
           ssh-keygen -R $DIGITAL_OCEAN_HOST
           ssh-keygen -F $DIGITAL_OCEAN_HOST
+          touch ~/.ssh/known_hosts
           cat known_hosts >> ~/.ssh/known_hosts
           
           # SSH into the server, pull the latest changes, and use Docker Compose to build and deploy
