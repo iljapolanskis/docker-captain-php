@@ -50,6 +50,7 @@ jobs:
             cd /var/www/docker-captain-php
             git pull origin main
             echo "$ENV_FILE" > .env
+            docker-compose down
             docker-compose pull
             docker-compose up -d
             docker system prune -f

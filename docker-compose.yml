@@ -12,7 +12,7 @@ services:
       - "8080:8080"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      - "./letsencrypt/acme.json:/etc/letsencrypt/acme.json"
+      - "./letsencrypt:/etc/letsencrypt"
       - "./traefik.${DEPLOY_MODE}.yml:/etc/traefik/traefik.${DEPLOY_MODE}.yml:ro"
 
   go:
