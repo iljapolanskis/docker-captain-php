@@ -25,7 +25,8 @@ entryPoints:
 certificatesResolvers:
   resolver:
     acme:
-      caServer: "https://acme-v02.api.letsencrypt.org/directory"
       email: "${EMAIL}"
       storage: "/etc/letsencrypt/acme.json"
+      httpChallenge:
+        entryPoint: web
       tlsChallenge: {}
