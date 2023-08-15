@@ -24,7 +24,7 @@ jobs:
           ENV_FILE: ${{ secrets.ENV_FILE }}
         run: | 
           echo "$ENV_FILE" > .env
-          docker-compose -f docker-compose.yml build --no-cache
+          docker-compose -f docker-compose.yml build
 
       # Optional: If you want to push the built images to DockerHub
       - name: Push to DockerHub
