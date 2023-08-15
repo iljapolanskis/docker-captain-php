@@ -15,7 +15,7 @@ services:
       - "./letsencrypt/acme.json:/etc/letsencrypt/acme.json"
       - "./traefik.${DEPLOY_MODE}.yml:/etc/traefik/traefik.${DEPLOY_MODE}.yml:ro"
 
-  go_service:
+  go:
     build:
       context: "."
       dockerfile: "docker-services/go/Dockerfile"
