@@ -36,10 +36,17 @@ jobs:
           DIGITAL_OCEAN_SSH_KEY: ${{ secrets.DIGITAL_OCEAN_SSH_KEY }}
           DIGITAL_OCEAN_USER: ${{ secrets.DIGITAL_OCEAN_USER }}
           DIGITAL_OCEAN_HOST: ${{ secrets.DIGITAL_OCEAN_HOST }}
+          DIGITAL_OCEAN_SSH_HOST_KEY: ${{ secrets.DIGITAL_OCEAN_SSH_HOST_KEY }}
           ENV_FILE: ${{ secrets.ENV_FILE }}
         run: |
           echo "$DIGITAL_OCEAN_SSH_KEY" > private_key.pem
           chmod 600 private_key.pem
+          
+          # Add the decoded SSH host key to the known_hosts file
+          echo "$DIGITAL_OCEAN_SSH_HOST_KEY" | base64 -d > known_hosts
+          ssh-keygen -R $DIGITAL_OCEAN_HOST
+          ssh-keygen -F $DIGITAL_OCEAN_HOST
+          cat known_hosts >> ~/.ssh/known_hosts
           
           # SSH into the server, pull the latest changes, and use Docker Compose to build and deploy
           ssh -o StrictHostKeyChecking=no -i private_key.pem $DIGITAL_OCEAN_USER@$DIGITAL_OCEAN_HOST <<EOF
