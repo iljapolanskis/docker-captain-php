@@ -21,8 +21,8 @@ services:
       dockerfile: "docker-services/go/Dockerfile"
     image: "ipolanskis/${PROJECT_NAME}_go:latest"
     container_name: "${PROJECT_NAME}_go"
-    ports:
-      - ":80"
+    expose:
+      - "80"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.go_service.rule=Host(`${DOMAIN}`)"
