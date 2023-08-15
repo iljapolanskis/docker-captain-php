@@ -15,7 +15,7 @@ func main() {
 		json.NewEncoder(w).Encode(response)
 	})
 
-	fmt.Println("Server started on :8080")
-	http.ListenAndServe(":8080", nil)
+	fmt.Println("Server started on port 80")
+	http.ListenAndServe(":80", nil)
 }
 

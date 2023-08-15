@@ -1,27 +1,30 @@
-version: '3'
+version: "3.7"
 
 services:
-  nginx:
-    image: jonasal/nginx-certbot:latest
-    restart: unless-stopped
+  traefik:
+    image: "traefik:v2.10"
+    container_name: "${PROJECT_NAME}_traefik"
+    command:
+      - "--configFile=/etc/traefik/traefik.${DEPLOY_MODE}.yml"
     ports:
       - "80:80"
       - "443:443"
-    volumes:
-      - ./docker-services/nginx:/etc/nginx/user_conf.d
-      - nginx_secrets:/etc/letsencrypt
-    environment:
-      - CERTBOT_EMAIL
-    depends_on:
-      - goapp
-
-  goapp:
-    build:
-      context: .
-      dockerfile: docker-services/goapp/Dockerfile
-    image: ipolanskis/goapp:latest
-    ports:
       - "8080:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "./letsencrypt/acme.json:/etc/letsencrypt/acme.json"
+      - "./traefik.${DEPLOY_MODE}.yml:/etc/traefik/traefik.${DEPLOY_MODE}.yml:ro"
 
-volumes:
-  nginx_secrets:
+  go_service:
+    build:
+      context: "."
+      dockerfile: "docker-services/go/Dockerfile"
+    image: "ipolanskis/${PROJECT_NAME}_go:latest"
+    container_name: "${PROJECT_NAME}_go"
+    ports:
+      - ":80"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.go_service.rule=Host(`${DOMAIN}`)"
+      - "traefik.http.routers.go_service.entrypoints=websecure"
+      - "traefik.http.routers.go_service.tls.certresolver=resolver"
